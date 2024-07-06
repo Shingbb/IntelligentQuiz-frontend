@@ -1,30 +1,44 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
-  <router-view />
+  <div id="app">
+    <template v-if="route.path.startsWith('/user')">
+      <router-view />
+    </template>
+    <template v-else>
+      <BasicLayout />
+    </template>
+  </div>
 </template>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script setup lang="ts">
+import BasicLayout from "@/layouts/BasicLayout.vue";
+import { useRoute } from "vue-router";
+import { onMounted } from "vue";
+import { useLoginUserStore } from "@/store/userStore";
 
-nav {
-  padding: 30px;
-}
+const route = useRoute();
 
-nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
+/**
+ * 全局初始化函数，有全局单次调用的代码，都可以写到这里
+ */
+const doInit = () => {
+  console.log("hello 欢迎来到我的项目");
+};
 
-nav a.router-link-exact-active {
-  color: #42b983;
-}
-</style>
+/**
+ * 使用GET方法获取登录用户的信息。
+ *
+ * 该注释描述了以下异步操作的意图：通过发送一个GET请求来获取当前登录用户的详细信息。
+ * 这是一个重要的操作，因为它可能影响到用户界面的显示，例如，基于用户权限的界面元素的可见性。
+ *
+ * @returns {Promise} 返回一个Promise对象，该对象在请求成功时解析为响应数据。
+ */
+// getLoginUserUsingGet().then((res) => {
+//   console.log(res);
+// });
+
+onMounted(() => {
+  doInit();
+});
+</script>
+
+<style scoped></style>

@@ -1,24 +1,20 @@
-# intelligentquiz-frontend
+<p align="center">
+    <a href="" target="_blank">
+      <img src="src/assets/A-answer.jpg" width="280" />
+    </a>
+</p>
 
-## Project setup
-```
-npm install
-```
+# intelligentQuiz - IQ博士
+> 作者：[Shing](https://github.com/Shingbb)
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+<div align="center">
+    <a href=""><img src="https://img.shields.io/badge/github-项目前端地址-yellow.svg?style=plasticr"></a>
+    <a href=""><img src="https://img.shields.io/badge/gitee-项目地址-red.svg?style=plasticr"></a>
+</div>
 
-### Compiles and minifies for production
-```
-npm run build
-```
+___
 
-### Lints and fixes files
-```
-npm run lint
-```
+## 项目简介
+intelligentQuiz(IQ)，基于 Vue 3 + Spring Boot + Redis + ChatGLM AI + RxJava + SSE 的 **AI 答题应用平台。**
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+用户可以基于 AI 快速制作并发布多种答题应用，支持检索和分享应用、在线答题并基于评分算法或 AI 得到回答总结；管理员可以审核应用、集中管理整站内容，并进行统计分析。持续更新中～

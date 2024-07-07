@@ -34,6 +34,12 @@
     <template #userAvatar="{ record }">
       <a-image width="64" :src="record.userAvatar" />
     </template>
+    <template #createTime="{ record }">
+      {{ dayjs(record.createTime).format("YYYY-MM-DD HH:mm:ss") }}
+    </template>
+    <template #updateTime="{ record }">
+      {{ dayjs(record.updateTime).format("YYYY-MM-DD HH:mm:ss") }}
+    </template>
     <template #optional="{ record }">
       <a-space>
         <a-button status="danger" @click="doDelete(record)">删除</a-button>
@@ -41,6 +47,7 @@
     </template>
   </a-table>
 </template>
+
 <script setup lang="ts">
 import { ref, watchEffect } from "vue";
 import {
@@ -49,18 +56,22 @@ import {
 } from "@/api/userController";
 import API from "@/api";
 import message from "@arco-design/web-vue/es/message";
+import { dayjs } from "@arco-design/web-vue/es/_utils/date";
 
 const formSearchParams = ref<API.UserQueryRequest>({});
+
 // 初始化搜索条件（不应该被修改）
 const initSearchParams = {
   current: 1,
   pageSize: 10,
 };
+
 const searchParams = ref<API.UserQueryRequest>({
   ...initSearchParams,
 });
 const dataList = ref<API.User[]>([]);
 const total = ref<number>(0);
+
 /**
  * 加载数据
  */
@@ -73,6 +84,7 @@ const loadData = async () => {
     message.error("获取数据失败，" + res.data.message);
   }
 };
+
 /**
  * 执行搜索
  */
@@ -82,6 +94,7 @@ const doSearch = () => {
     ...formSearchParams.value,
   };
 };
+
 /**
  * 当分页变化时，改变搜索条件，触发数据加载
  * @param page
@@ -92,6 +105,7 @@ const onPageChange = (page: number) => {
     current: page,
   };
 };
+
 /**
  * 删除
  * @param record
@@ -100,6 +114,7 @@ const doDelete = async (record: API.User) => {
   if (!record.id) {
     return;
   }
+
   const res = await deleteUserUsingPost({
     id: record.id,
   });
@@ -109,12 +124,14 @@ const doDelete = async (record: API.User) => {
     message.error("删除失败，" + res.data.message);
   }
 };
+
 /**
  * 监听 searchParams 变量，改变时触发数据的重新加载
  */
 watchEffect(() => {
   loadData();
 });
+
 // 表格列配置
 const columns = [
   {
@@ -145,10 +162,12 @@ const columns = [
   {
     title: "创建时间",
     dataIndex: "createTime",
+    slotName: "createTime",
   },
   {
     title: "更新时间",
     dataIndex: "updateTime",
+    slotName: "updateTime",
   },
   {
     title: "操作",

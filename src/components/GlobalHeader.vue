@@ -16,6 +16,15 @@
             <div class="title">IQ博士</div>
           </div>
         </a-menu-item>
+        <a-sub-menu v-for="subItem in childrenRoutes" :key="subItem.path">
+          <template #icon>
+            <icon-apps></icon-apps>
+          </template>
+          <template #title>{{ subItem.name }}</template>
+          <a-menu-item v-for="child in subItem.children" :key="child.path">
+            {{ child.name }}
+          </a-menu-item>
+        </a-sub-menu>
         <a-menu-item v-for="item in visibleRoutes" :key="item.path">
           {{ item.name }}
         </a-menu-item>
@@ -49,19 +58,39 @@ router.afterEach((to, from, failure) => {
   selectedKeys.value = [to.path];
 });
 
+// 计算属性：用于获取应在菜单中显示的路由列表
 // 展示在菜单栏的路由数组
 const visibleRoutes = computed(() => {
+  // 过滤路由数组，只包含不应隐藏在菜单中且没有子路由的项
   return routes.filter((item) => {
-    if (item.meta?.hideInMenu) {
+    // 如果路由元数据中指定隐藏在菜单中，或用户无访问权限，则排除该路由
+    if (
+      item.meta?.hideInMenu ||
+      !checkAccess(loginUserStore.loginUser, item.meta?.access as string)
+    ) {
       return false;
     }
-    // 根据权限过滤菜单
-    if (!checkAccess(loginUserStore.loginUser, item.meta?.access as string)) {
-      return false;
-    }
-    return true;
+    // 如果路由没有子路由，则包括在可见路由列表中
+    return !item.children;
   });
 });
+
+// 计算属性：用于获取应在菜单中显示的具有子路由的路由列表
+const childrenRoutes = computed(() => {
+  // 过滤路由数组，只包含不应隐藏在菜单中且具有子路由的项
+  return routes.filter((item) => {
+    // 如果路由元数据中指定隐藏在菜单中，或用户无访问权限，则排除该路由
+    if (
+      item.meta?.hideInMenu ||
+      !checkAccess(loginUserStore.loginUser, item.meta?.access as string)
+    ) {
+      return false;
+    }
+    // 如果路由有子路由且子路由数量大于0，则包括在具有子路由的路由列表中
+    return item.children && item.children.length > 0;
+  });
+});
+
 // 点击菜单跳转到对应页面
 const doMenuClick = (key: string) => {
   router.push({

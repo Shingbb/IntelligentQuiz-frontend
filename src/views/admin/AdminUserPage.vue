@@ -48,9 +48,36 @@
     <template #optional="{ record }">
       <a-space>
         <a-button status="danger" @click="doDelete(record)">删除</a-button>
+        <a-button status="warning" @click="openEditModal(record)"
+          >编辑
+        </a-button>
       </a-space>
     </template>
   </a-table>
+  <!-- 编辑模态框 -->
+  <a-modal
+    v-model:visible="isEditModalVisible"
+    title="编辑用户信息"
+    @ok="saveEdit"
+    @cancel="closeEditModal"
+  >
+    <a-form :model="editForm">
+      <a-form-item field="userName" label="用户名">
+        <a-input v-model="editForm.userName" placeholder="请输入用户名" />
+      </a-form-item>
+      <a-form-item field="userProfile" label="用户简介">
+        <a-input v-model="editForm.userProfile" placeholder="请输入用户简介" />
+      </a-form-item>
+      <a-form-item field="userProfile" label="用户头像">
+        <div class="avatar-input">
+          <a-input v-model="editForm.userAvatar" placeholder="请输入用户头像" />
+          <div class="avatar-uploader">
+            <PictureUploader biz="user_avatar"></PictureUploader>
+          </div>
+        </div>
+      </a-form-item>
+    </a-form>
+  </a-modal>
 </template>
 
 <script setup lang="ts">
@@ -58,10 +85,12 @@ import { ref, watchEffect } from "vue";
 import {
   deleteUserUsingPost,
   listUserByPageUsingPost,
+  updateUserUsingPost,
 } from "@/api/userController";
 import API from "@/api";
 import message from "@arco-design/web-vue/es/message";
 import { dayjs } from "@arco-design/web-vue/es/_utils/date";
+import PictureUploader from "@/components/PictureUploader.vue";
 
 const formSearchParams = ref<API.UserQueryRequest>({});
 
@@ -76,6 +105,10 @@ const searchParams = ref<API.UserQueryRequest>({
 });
 const dataList = ref<API.User[]>([]);
 const total = ref<number>(0);
+
+// 编辑模态框状态
+const isEditModalVisible = ref(false);
+const editForm = ref<API.User>({});
 
 /**
  * 加载数据
@@ -112,7 +145,7 @@ const onPageChange = (page: number) => {
 };
 
 /**
- * 删除
+ * 删除用户
  * @param record
  */
 const doDelete = async (record: API.User) => {
@@ -127,6 +160,29 @@ const doDelete = async (record: API.User) => {
     loadData();
   } else {
     message.error("删除失败，" + res.data.message);
+  }
+};
+
+// 打开编辑模态框
+const openEditModal = (record: API.User) => {
+  editForm.value = { ...record }; // 复制当前行数据
+  isEditModalVisible.value = true;
+};
+
+// 关闭编辑模态框
+const closeEditModal = () => {
+  isEditModalVisible.value = false;
+};
+
+// 保存编辑内容
+const saveEdit = async () => {
+  const res = await updateUserUsingPost(editForm.value);
+  if (res.data.code === 0) {
+    message.success("编辑成功");
+    loadData();
+    closeEditModal();
+  } else {
+    message.error("编辑失败，" + res.data.message);
   }
 };
 
@@ -180,3 +236,10 @@ const columns = [
   },
 ];
 </script>
+
+<style scoped>
+.avatar-input,
+.avatar-uploader {
+  width: 100%; /* 根据需要调整宽度 */
+}
+</style>

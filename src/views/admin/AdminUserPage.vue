@@ -6,10 +6,15 @@
     @submit="doSearch"
   >
     <a-form-item field="userName" label="用户名">
-      <a-input v-model="formSearchParams.userName" placeholder="请输入用户名" />
+      <a-input
+        allow-clear
+        v-model="formSearchParams.userName"
+        placeholder="请输入用户名"
+      />
     </a-form-item>
     <a-form-item field="userProfile" label="用户简介">
       <a-input
+        allow-clear
         v-model="formSearchParams.userProfile"
         placeholder="请输入用户简介"
       />

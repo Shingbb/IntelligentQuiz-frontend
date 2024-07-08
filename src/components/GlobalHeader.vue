@@ -31,8 +31,27 @@
       </a-menu>
     </a-col>
     <a-col flex="100px">
+      <!-- 当用户已登录时，显示用户头像和下拉菜单 -->
       <div v-if="loginUserStore.loginUser.id">
-        {{ loginUserStore.loginUser.userName ?? "匿名用户" }}
+        <!-- 使用a-space组件为元素提供间距 -->
+        <a-space>
+          <!-- 创建一个悬停触发的下拉菜单 -->
+          <a-dropdown trigger="hover">
+            <!-- 显示用户的头像 -->
+            <a-avatar>
+              <img alt="avatar" :src="loginUserStore.loginUser.userAvatar" />
+            </a-avatar>
+            <!-- 下拉菜单的内容模板 -->
+            <template #content>
+              <!-- 显示用户的名字 -->
+              <a-doption>
+                {{ loginUserStore.loginUser.userName }}
+              </a-doption>
+              <!-- 提供一个退出登录的选项 -->
+              <a-doption :onclick="logout">退出登录</a-doption>
+            </template>
+          </a-dropdown>
+        </a-space>
       </div>
       <div v-else>
         <a-button type="primary" href="/user/login">登录</a-button>
@@ -47,6 +66,7 @@ import { useRouter } from "vue-router";
 import { computed, ref } from "vue";
 import { useLoginUserStore } from "@/store/userStore";
 import checkAccess from "@/access/checkAccess";
+import { userLogoutUsingPost } from "@/api/userController";
 
 const loginUserStore = useLoginUserStore();
 
@@ -96,6 +116,24 @@ const doMenuClick = (key: string) => {
   router.push({
     path: key,
   });
+};
+
+/**
+ * 用户登出函数
+ *
+ * 该函数用于实现用户登出功能。它首先调用用户登出接口，然后将用户重定向到登录页面。
+ * 这样做是为了确保用户在登出后需要重新认证才能访问受保护的资源。
+ *
+ * @returns {void} 该函数没有返回值
+ */
+const logout = () => {
+  userLogoutUsingPost(); // 调用登出接口，执
+  const logout = () => {
+    userLogoutUsingPost();
+    router.push({
+      path: `/user/login`,
+    });
+  };
 };
 </script>
 

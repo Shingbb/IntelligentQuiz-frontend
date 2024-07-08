@@ -1,4 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 /* eslint-disable */
 import request from '@/request';
@@ -102,8 +101,11 @@ export async function listMyAppVoByPageUsingPost(
   });
 }
 
-/** doReview POST /api/app/review */
-export async function doReviewUsingPost(body: API.ReviewRequest, options?: { [key: string]: any }) {
+/** doAppReview POST /api/app/review */
+export async function doAppReviewUsingPost(
+  body: API.ReviewRequest,
+  options?: { [key: string]: any },
+) {
   return request<API.BaseResponseBoolean_>('/api/app/review', {
     method: 'POST',
     headers: {

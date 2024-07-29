@@ -16,6 +16,11 @@
         <a-button @click="addQuestion(questionContent.length)">
           底部添加题目
         </a-button>
+        <!-- AI 生成抽屉 -->
+        <AiGenerateQuestionDrawer
+          :appId="appId"
+          :onSuccess="onAiGenerateSuccess"
+        />
         <!-- 遍历已有的题目，提供编辑和删除功能 -->
         <!-- 遍历每道题目 -->
         <div v-for="(question, index) in questionContent" :key="index">
@@ -116,6 +121,7 @@ import {
   listQuestionVoByPageUsingPost,
 } from "@/api/questionController";
 import message from "@arco-design/web-vue/es/message";
+import AiGenerateQuestionDrawer from "@/views/add/components/AiGenerateQuestionDrawer.vue";
 
 interface Props {
   appId: string;
@@ -252,5 +258,13 @@ const handleSubmit = async () => {
   } else {
     message.error("操作失败，" + res.data.message);
   }
+};
+
+/**
+ * AI 生成题目成功后执行
+ */
+const onAiGenerateSuccess = (result: API.QuestionContentDTO[]) => {
+  message.success(`AI 生成题目成功，生成 ${result.length} 道题目`);
+  questionContent.value = [...questionContent.value, ...result];
 };
 </script>

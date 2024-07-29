@@ -79,10 +79,13 @@ const questionContent = ref<API.QuestionContentDTO[]>([]);
 const current = ref(1);
 // 当前题目
 const currentQuestion = ref<API.QuestionContentDTO>({});
+
 // 当前题目选项
 const questionOptions = computed(() => {
+  // 返回当前问题的选项，如果问题不存在或没有选项，则返回空数组
   return currentQuestion.value?.options
     ? currentQuestion.value.options.map((option) => {
+        // 构建选项对象，包含标签和值，标签为“选项键. 选项值”的格式
         return {
           label: `${option.key}. ${option.value}`,
           value: option.key,
@@ -90,6 +93,7 @@ const questionOptions = computed(() => {
       })
     : [];
 });
+
 // 当前答案
 const currentAnswer = ref<string>();
 // 回答列表
@@ -111,18 +115,29 @@ const loadData = async () => {
   } else {
     message.error("获取应用失败，" + res.data.message);
   }
-  // 获取题目
+
+  /**
+   * 通过调用后端接口，分页获取题目。
+   * 此处使用了异步函数和await关键字，以同步的方式处理接口调用的结果。
+   * 主要目的是为了获取列表中的第一个问题的内容，并将其赋值给questionContent。
+   * 如果接口调用失败，将显示错误消息。
+   *
+   * @param {any} props - 组件接收的props，其中包含了appId。
+   * @returns {void} 无返回值，但会根据接口调用结果更新questionContent或显示错误信息。
+   */
   res = await listQuestionVoByPageUsingPost({
     appId: props.appId as any,
-    current: 1,
-    pageSize: 1,
-    sortField: "createTime",
-    sortOrder: "descend",
+    current: 1, // 指定当前页码为第一页
+    pageSize: 1, // 每页只获取一条记录
+    sortField: "createTime", // 按照创建时间排序
+    sortOrder: "descend", // 降序排序
   });
   if (res.data.code === 0 && res.data.data?.records) {
     questionContent.value = res.data.data.records[0].questionContent;
+    // 如果接口返回码为0，且返回的数据包含records字段，则取出第一个问题的内容赋值给questionContent
   } else {
     message.error("获取题目失败，" + res.data.message);
+    // 如果接口调用失败，显示错误消息
   }
 };
 

@@ -35,14 +35,24 @@
           />
         </a-form-item>
         <a-form-item>
-          <a-button
-            :loading="submitting"
-            type="primary"
-            html-type="submit"
-            style="width: 120px"
-          >
-            {{ submitting ? "生成中" : "一键生成" }}
-          </a-button>
+          <a-space>
+            <a-button
+              :loading="submitting"
+              type="primary"
+              html-type="submit"
+              style="width: 120px"
+            >
+              {{ submitting ? "生成中" : "一键生成" }}
+            </a-button>
+            <a-button
+              :loading="submitting"
+              type="dashed"
+              style="width: 120px"
+              @click="handlSSEeSubmit"
+            >
+              {{ submitting ? "生成中" : "实时生成" }}
+            </a-button>
+          </a-space>
         </a-form-item>
       </a-form>
     </div>
@@ -108,5 +118,25 @@ const handleSubmit = async () => {
     message.error("操作失败，" + res.data.message);
   }
   submitting.value = false;
+};
+
+/**
+ * 提交 SSE（实时生成）
+ */
+const handlSSEeSubmit = async () => {
+  if (!props.appId) {
+    return;
+  }
+  submitting.value = true;
+  // 创建 SSE 请求
+  // todo 手动填写完的后台地址
+  const eventSource = new EventSource(
+    "http://localhost:8101/api/v2/question/ai_generate/sse"
+  );
+  // 接受消息
+  eventSource.onmessage = (event) => {
+    submitting.value = true;
+    submitting.value = false;
+  };
 };
 </script>
